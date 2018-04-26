@@ -1,11 +1,11 @@
 package com.filestack;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
-import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.HmacUtils;
 
+import javax.crypto.Mac;
 import java.util.Date;
 
 /**
@@ -149,14 +149,18 @@ public class Policy {
      * Do not include the app secret in client-side code.
      */
     public Policy build(String appSecret) {
-      Gson gson = new Gson();
-      HashFunction hashFunction = Hashing.hmacSha256(appSecret.getBytes(Charsets.UTF_8));
+      Gson serializer = new Gson();
+      String json = serializer.toJson(this);
+      String policy = Base64.encodeBase64URLSafeString(json.getBytes());
 
-      String jsonPolicy = gson.toJson(this);
-      String encodedPolicy = BaseEncoding.base64Url().encode(jsonPolicy.getBytes(Charsets.UTF_8));
-      String signature = hashFunction.hashString(encodedPolicy, Charsets.UTF_8).toString();
-
-      return new Policy(encodedPolicy, signature);
+      try {
+        Mac sha256 = HmacUtils.getInitializedMac("HmacSHA256", appSecret.getBytes());
+        byte[] signature = sha256.doFinal(policy.getBytes());
+        return new Policy(policy, Hex.encodeHexString(signature));
+      } catch (IllegalArgumentException e) {
+        e.printStackTrace();
+        return null;
+      }
     }
   }
 

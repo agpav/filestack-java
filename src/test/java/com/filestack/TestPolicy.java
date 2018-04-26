@@ -4,18 +4,15 @@ import com.google.gson.Gson;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.charset.Charset;
+
 /**
  * Tests {@link Policy Policy} class to check building and converting to JSON.
  */
 public class TestPolicy {
   private static final String TEST_SECRET = "RDOQO4WFRBFPRCFZOZFHJGZHW4";
-  private static final String POLICY_NORMAL
-      = "eyJleHBpcnkiOjQ2NTM2NTE2MDAsImNhbGxzIjpbIndyaXRlIiwicmVtb3ZlIl0sImhhbmRsZSI6IktXOUVKaFl0U"
-      + "zZ5NDhXaG0yUzZEIiwidXJsIjoiaHR0cHM6Ly91cGxvYWRcXC53aWtpbWVkaWFcXC5vcmcvd2lraXBlZGlhLy4qIi"
-      + "wibWF4U2l6ZSI6MTAyNCwibWluU2l6ZSI6MTI4LCJwYXRoIjoiL3NvbWUvZGlyLyIsImNvbnRhaW5lciI6InNvbWU"
-      + "tY29udGFpbmVyIn0=";
-  private static final String SIGNATURE_NORMAL
-      = "506bd728a25588c6692565b0076889097e5d23971bcf1d1de646f4426d2dc9b6";
+  private static final String POLICY_NORMAL = "eyJleHBpcnkiOjQ2NTM2NTE2MDAsImNhbGxzIjpbIndyaXRlIiwicmVtb3ZlIl0sImhhbmRsZSI6IktXOUVKaFl0UzZ5NDhXaG0yUzZEIiwidXJsIjoiaHR0cHM6Ly91cGxvYWQud2lraW1lZGlhLm9yZy93aWtpcGVkaWEvLioiLCJtYXhTaXplIjoxMDI0LCJtaW5TaXplIjoxMjgsInBhdGgiOiIvc29tZS9kaXIvIiwiY29udGFpbmVyIjoic29tZS1jb250YWluZXIifQ";
+  private static final String SIGNATURE_NORMAL = "881aefee018d7ab43da7b9dd1887fbd0a81368c2c3542902925066581a3f8135";
   private static final String POLICY_NO_CALLS = "eyJleHBpcnkiOjQ2NTM2NTE2MDB9";
   private static final String SIGNATURE_NO_CALLS
       = "ab1bea1b6ce36f77ff2a0a4da25651e64dfd9daeb0b2eacfe3836a13c96c022c";
@@ -32,7 +29,7 @@ public class TestPolicy {
         .expiry(4653651600L)
         .calls(Policy.CALL_WRITE, Policy.CALL_REMOVE)
         .handle("KW9EJhYtS6y48Whm2S6D")
-        .url("https://upload\\.wikimedia\\.org/wikipedia/.*")
+        .url("https://upload.wikimedia.org/wikipedia/.*")
         .maxSize(1024)
         .minSize(128)
         .path("/some/dir/")

@@ -4,13 +4,17 @@ import com.filestack.transforms.AvTransform;
 import com.filestack.transforms.ImageTransform;
 import com.filestack.transforms.tasks.AvTransformOptions;
 import com.filestack.transforms.tasks.CropTask;
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
+import okio.BufferedSource;
+import okio.Okio;
+import okio.Source;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class TestTransforms {
@@ -39,11 +43,9 @@ public class TestTransforms {
     String cropPath = loader.getResource("com/filestack/sample_image_cropped.jpg").getPath();
     File cropFile = new File(cropPath);
 
-    String correct = Files.asByteSource(cropFile).hash(Hashing.sha256()).toString();
-    byte[] bytes = transform.getContent().bytes();
-    String output = Hashing.sha256().hashBytes(bytes).toString();
-
-    Assert.assertEquals(correct, output);
+    String correctHash = hashFile(cropFile);
+    String outputHash = hashBytes(transform.getContent().bytes());
+    Assert.assertEquals(correctHash, outputHash);
   }
 
   @Test
@@ -70,11 +72,9 @@ public class TestTransforms {
     String mp3Path = loader.getResource("com/filestack/sample_music.mp3").getPath();
     File mp3File = new File(mp3Path);
 
-    String correct = Files.asByteSource(mp3File).hash(Hashing.sha256()).toString();
-    byte[] bytes = mp3FileLink.getContent().bytes();
-    String output = Hashing.sha256().hashBytes(bytes).toString();
-
-    Assert.assertEquals(correct, output);
+    String correctHash = hashFile(mp3File);
+    String outputHash = hashBytes(mp3FileLink.getContent().bytes());
+    Assert.assertEquals(correctHash, outputHash);
   }
 
   /** Deletes any files uploaded during tests. */
@@ -98,5 +98,18 @@ public class TestTransforms {
         Assert.fail("Unable to cleanup resource");
       }
     }
+  }
+
+  private String hashFile(File file) throws IOException, NoSuchAlgorithmException {
+    Source source = Okio.source(file);
+    BufferedSource bufferedSource = Okio.buffer(source);
+    byte[] input = bufferedSource.readByteArray();
+    return hashBytes(input);
+  }
+
+  private String hashBytes(byte[] input) throws NoSuchAlgorithmException {
+    MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+    byte[] output = sha256.digest(input);
+    return new String(output);
   }
 }

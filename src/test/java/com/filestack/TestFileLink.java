@@ -3,10 +3,11 @@ package com.filestack;
 import com.filestack.internal.BaseService;
 import com.filestack.internal.CdnService;
 import com.filestack.internal.Networking;
-import com.google.common.io.Files;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import okio.BufferedSink;
+import okio.Okio;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -96,7 +97,8 @@ public class TestFileLink {
     if (!file.createNewFile()) {
       Assert.fail("Unable to create resource");
     }
-    Files.write("Test content".getBytes(), file);
+    BufferedSink sink = Okio.buffer(Okio.sink(file));
+    sink.writeUtf8("Test content");
 
     Mockito
         .doReturn(Helpers.createRawCall("application/json", ""))
