@@ -31,9 +31,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.3.0' // GSON integration
 
     compile 'com.google.code.gson:gson:2.8.1' // JSON serialization to Java objects
-    compile ('com.google.guava:guava:22.0-android', { // Useful core libraries for Java
-        exclude group: 'com.google.code.findbugs', module: 'jsr305'
-    })
+    compile 'commons-codec:commons-codec:1.11' // Using for Base64 implementation
 
     compile 'io.reactivex.rxjava2:rxjava:2.1.2' // Observable pattern for async methods
 }
